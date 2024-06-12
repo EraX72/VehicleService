@@ -1,13 +1,28 @@
-﻿using System.Collections.Generic;
-using VehicleService.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Vehicle
+namespace VehicleService.Models
 {
-    public int VehicleId { get; set; }
-    public string Make { get; set; }
-    public string Model { get; set; }
-    public int Year { get; set; }
-    public int CustomerId { get; set; }
-    public Customer Customer { get; set; }
-    public ICollection<ServiceRecord> ServiceRecords { get; set; }
+    public class Vehicle
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int VehicleId { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Make { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        public string Model { get; set; }
+
+        [Required]
+        public int Year { get; set; }
+
+        [ForeignKey("Customer")]
+        public int CustomerId { get; set; }
+
+        public Customer Customer { get; set; }
+    }
 }

@@ -7,20 +7,20 @@ using VehicleService.Repositories;
 namespace VehicleService.Controllers
 {
     [Authorize(Roles = "Administrator")]
-    public class CustomerController : Controller
+    public class MechanicController : Controller
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IMechanicRepository _mechanicRepository;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public MechanicController(IMechanicRepository mechanicRepository)
         {
-            _customerRepository = customerRepository;
+            _mechanicRepository = mechanicRepository;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var customers = await _customerRepository.GetAllCustomersAsync();
-            return View(customers);
+            var mechanics = await _mechanicRepository.GetAllMechanicsAsync();
+            return View(mechanics);
         }
 
         public IActionResult Create()
@@ -30,58 +30,58 @@ namespace VehicleService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Customer customer)
+        public async Task<IActionResult> Create(Mechanic mechanic)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.AddCustomerAsync(customer);
+                await _mechanicRepository.AddMechanicAsync(mechanic);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(mechanic);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var mechanic = await _mechanicRepository.GetMechanicByIdAsync(id);
+            if (mechanic == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(mechanic);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Customer customer)
+        public async Task<IActionResult> Edit(int id, Mechanic mechanic)
         {
-            if (id != customer.CustomerId)
+            if (id != mechanic.MechanicId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomerAsync(customer);
+                await _mechanicRepository.UpdateMechanicAsync(mechanic);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(mechanic);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var mechanic = await _mechanicRepository.GetMechanicByIdAsync(id);
+            if (mechanic == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(mechanic);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _customerRepository.DeleteCustomerAsync(id);
+            await _mechanicRepository.DeleteMechanicAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

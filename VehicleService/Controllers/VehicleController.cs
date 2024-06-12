@@ -2,25 +2,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using VehicleService.Models;
-using VehicleService.Repositories;
+using VehicleServicer.Repositories;
 
 namespace VehicleService.Controllers
 {
     [Authorize(Roles = "Administrator")]
-    public class CustomerController : Controller
+    public class VehicleController : Controller
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IVehicleRepository _vehicleRepository;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public VehicleController(IVehicleRepository vehicleRepository)
         {
-            _customerRepository = customerRepository;
+            _vehicleRepository = vehicleRepository;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var customers = await _customerRepository.GetAllCustomersAsync();
-            return View(customers);
+            var vehicles = await _vehicleRepository.GetAllVehiclesAsync();
+            return View(vehicles);
         }
 
         public IActionResult Create()
@@ -30,58 +30,58 @@ namespace VehicleService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Customer customer)
+        public async Task<IActionResult> Create(Vehicle vehicle)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.AddCustomerAsync(customer);
+                await _vehicleRepository.AddVehicleAsync(vehicle);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(vehicle);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+            if (vehicle == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(vehicle);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Customer customer)
+        public async Task<IActionResult> Edit(int id, Vehicle vehicle)
         {
-            if (id != customer.CustomerId)
+            if (id != vehicle.VehicleId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomerAsync(customer);
+                await _vehicleRepository.UpdateVehicleAsync(vehicle);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(vehicle);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var vehicle = await _vehicleRepository.GetVehicleByIdAsync(id);
+            if (vehicle == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(vehicle);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _customerRepository.DeleteCustomerAsync(id);
+            await _vehicleRepository.DeleteVehicleAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

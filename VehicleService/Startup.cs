@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using AutoMapper;
-using VehicleService;
 using VehicleService.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.UI;
-
+using VehicleService.Repositories;
+using VehicleServicer.Repositories;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
 
 public class Startup
 {
@@ -27,11 +25,18 @@ public class Startup
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
         services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddControllersWithViews();
         services.AddRazorPages();
         services.AddAutoMapper(typeof(Startup));
+
+        // Register repositories and services here
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IServiceRecordRepository, ServiceRecordRepository>();
+        services.AddScoped<IMechanicRepository, MechanicRepository>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -39,6 +44,7 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
         }
         else
         {
@@ -59,5 +65,4 @@ public class Startup
             endpoints.MapRazorPages();
         });
     }
-
 }

@@ -1,35 +1,43 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace VehicleService.Data
 {
-    public static class RoleInitializer
+    public class RoleInitializer
     {
         public static async Task InitializeAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            string adminEmail = "admin@example.com";
-            string password = "Admin123!";
-            if (await roleManager.FindByNameAsync("Administrator") == null)
+            string[] roleNames = { "Admin", "User" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
             {
-                await roleManager.CreateAsync(new IdentityRole("Administrator"));
-            }
-            if (await roleManager.FindByNameAsync("Customer") == null)
-            {
-                await roleManager.CreateAsync(new IdentityRole("Customer"));
-            }
-            if (await roleManager.FindByNameAsync("Mechanic") == null)
-            {
-                await roleManager.CreateAsync(new IdentityRole("Mechanic"));
-            }
-            if (await userManager.FindByEmailAsync(adminEmail) == null)
-            {
-                IdentityUser admin = new IdentityUser { Email = adminEmail, UserName = adminEmail };
-                IdentityResult result = await userManager.CreateAsync(admin, password);
-                if (result.Succeeded)
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
                 {
-                    await userManager.AddToRoleAsync(admin, "Administrator");
+                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+            // Create a default admin user
+            var adminUser = new IdentityUser
+            {
+                UserName = "admin@admin.com",
+                Email = "admin@admin.com",
+            };
+
+            string adminPassword = "Admin@123";
+
+            var user = await userManager.FindByEmailAsync(adminUser.Email);
+
+            if (user == null)
+            {
+                var createPowerUser = await userManager.CreateAsync(adminUser, adminPassword);
+                if (createPowerUser.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
         }
-
     }
 }

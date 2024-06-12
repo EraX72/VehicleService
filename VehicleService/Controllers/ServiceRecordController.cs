@@ -7,20 +7,20 @@ using VehicleService.Repositories;
 namespace VehicleService.Controllers
 {
     [Authorize(Roles = "Administrator")]
-    public class CustomerController : Controller
+    public class ServiceRecordController : Controller
     {
-        private readonly ICustomerRepository _customerRepository;
+        private readonly IServiceRecordRepository _serviceRecordRepository;
 
-        public CustomerController(ICustomerRepository customerRepository)
+        public ServiceRecordController(IServiceRecordRepository serviceRecordRepository)
         {
-            _customerRepository = customerRepository;
+            _serviceRecordRepository = serviceRecordRepository;
         }
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var customers = await _customerRepository.GetAllCustomersAsync();
-            return View(customers);
+            var serviceRecords = await _serviceRecordRepository.GetAllServiceRecordsAsync();
+            return View(serviceRecords);
         }
 
         public IActionResult Create()
@@ -30,58 +30,58 @@ namespace VehicleService.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Customer customer)
+        public async Task<IActionResult> Create(ServiceRecord serviceRecord)
         {
             if (ModelState.IsValid)
             {
-                await _customerRepository.AddCustomerAsync(customer);
+                await _serviceRecordRepository.AddServiceRecordAsync(serviceRecord);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(serviceRecord);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var serviceRecord = await _serviceRecordRepository.GetServiceRecordByIdAsync(id);
+            if (serviceRecord == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(serviceRecord);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Customer customer)
+        public async Task<IActionResult> Edit(int id, ServiceRecord serviceRecord)
         {
-            if (id != customer.CustomerId)
+            if (id != serviceRecord.ServiceRecordId)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                await _customerRepository.UpdateCustomerAsync(customer);
+                await _serviceRecordRepository.UpdateServiceRecordAsync(serviceRecord);
                 return RedirectToAction(nameof(Index));
             }
-            return View(customer);
+            return View(serviceRecord);
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var customer = await _customerRepository.GetCustomerByIdAsync(id);
-            if (customer == null)
+            var serviceRecord = await _serviceRecordRepository.GetServiceRecordByIdAsync(id);
+            if (serviceRecord == null)
             {
                 return NotFound();
             }
-            return View(customer);
+            return View(serviceRecord);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _customerRepository.DeleteCustomerAsync(id);
+            await _serviceRecordRepository.DeleteServiceRecordAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }
